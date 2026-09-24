@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { list, deleter } from "../controllers/materials.js";
-import { authenticate, requireRole } from "../middlewares/auth";
+import { authenticate, requireRole } from "../middlewares/auth.js";
 
 export const materialsRouter = Router()
 
