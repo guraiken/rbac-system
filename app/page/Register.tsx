@@ -25,7 +25,7 @@ function Register() {
   return (
     <div>
         <h1>Registrar Usuário</h1>
-        <form>
+        <form onSubmit={submit}>
             <div>
                 <label htmlFor="name">Nome:</label>
                 <input type="text" id="name" name="name" required value={name}
