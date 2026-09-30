@@ -2,7 +2,7 @@ import axios from "axios"
 
 
 export const api = axios.create({
-    baseURL: process.env.BASE_URL || "http://localhost:3000/api"
+    baseURL: process.env.BASE_URL || `http://localhost:${process.env.PORT || 3001}/api`
 })
 
 export function errorMessage (error: unknown): string {

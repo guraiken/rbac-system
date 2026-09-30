@@ -3,12 +3,19 @@
 
 
 import React, { useState } from 'react'
-import { login } from '../services/login'
+import { login, type Session } from '../services/login'
+import Home from '../page'
+import Register from './Register'
 
 const Login = () => {
 
     const [email, setEmail] = useState("")
     const [senha, setSenha] = useState("")
+
+    const [session, setSession] = useState<Session | null>(null)
+    const [error, setError] = useState("")
+    const [showRegister, setShowRegister] = useState(false)
+    const [notice, setNotice] = useState("")
 
     const handleLogin = async (event: any) => {
 
@@ -30,6 +37,29 @@ const Login = () => {
     return (
         <>
             <div>
+                {/* SEM SESSÃO É MOSTRADO LOGIN, COM SESSÃO MOSTRA HOME */}
+
+                {session ? (
+                    <Home
+                    session={session}
+                    onLogout={() => {
+                        setSession(null)
+                        setEmail("")
+                        setSenha("")
+                    }}
+                    />
+                ) : showRegister ? (
+                    <Register
+                    onBack={() => setShowRegister(false)}
+                    onRegistered={message => {
+                        setShowRegister(false)
+                        setNotice(message)
+                    }}
+
+                    />
+                ) : <></>
+
+                }
                 <form action="">
                     <div>
                         <label htmlFor='email'>E-mail</label>
