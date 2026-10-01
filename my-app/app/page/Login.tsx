@@ -4,13 +4,13 @@
 
 import React, { useState } from 'react'
 import { login, type Session } from '../services/login'
-import Home from '../page'
+import {Home} from '../page/Home'
 import Register from './Register'
 
 const Login = () => {
 
     const [email, setEmail] = useState("")
-    const [senha, setSenha] = useState("")
+    const [password, setPassword] = useState("")
 
     const [session, setSession] = useState<Session | null>(null)
     const [error, setError] = useState("")
@@ -18,17 +18,12 @@ const Login = () => {
     const [notice, setNotice] = useState("")
 
     const handleLogin = async (event: any) => {
-
         event.preventDefault()
 
         try {
-
-            const response = await login(email, senha)
-
-            if (!response) {
-                alert('E-mail ou Senha inválidos')
-            }
-            alert('Login efetuado com sucesso!')
+            const result = await login(email, password)
+            setSession(result)
+            setPassword("")
         } catch (error) {
             console.error("Erro ao fazer login:", error)
         }
@@ -45,7 +40,7 @@ const Login = () => {
                     onLogout={() => {
                         setSession(null)
                         setEmail("")
-                        setSenha("")
+                        setPassword("")
                     }}
                     />
                 ) : showRegister ? (
@@ -60,14 +55,14 @@ const Login = () => {
                 ) : <></>
 
                 }
-                <form action="">
+                <form onSubmit={handleLogin}>
                     <div>
                         <label htmlFor='email'>E-mail</label>
                         <input type='text' name='email' id='email' value={email} onChange={(e) => setEmail(e.target.value)} required />
                     </div>
                     <div>
-                        <label htmlFor='senha'>Senha</label>
-                        <input type='password' name='senha' id='senha' value={senha} onChange={(e) => setSenha(e.target.value)} required />
+                        <label htmlFor='password'>Senha</label>
+                        <input type='password' name='password' id='password' value={password} onChange={(e) => setPassword(e.target.value)} required />
                     </div>
                     <button type="submit">Entrar</button>
 

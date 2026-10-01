@@ -12,5 +12,5 @@ export async function register( {name, email, password}:User){
         email,
         password
     })
-    return errorMessage(response) 
+    return response.data 
 }

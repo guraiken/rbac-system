@@ -4,7 +4,12 @@ import { ReactEventHandler, useState } from "react"
 import { register } from "../services/register"
 import { errorMessage } from "../services/api"
 
-function Register() {
+type Props = {
+    onBack: () => void;
+    onRegistered: (message: string) => void
+}
+
+export const Register = ({onBack, onRegistered}: Props) => {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -16,7 +21,8 @@ function Register() {
         setError("");
         try {
             const result = await register({name, email, password});
-            console.log("Mensagem: ", result)
+            console.log("Mensagem: ", result.message)
+            onRegistered(result.message)
         } catch (error) {
             setError(errorMessage(error))
         }
@@ -46,6 +52,7 @@ function Register() {
             </div>
 
             <button type="submit">Cadastrar</button>
+            <button onClick={onBack}>Voltar</button>
         </form>
     </div>
   )

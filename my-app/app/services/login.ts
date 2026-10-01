@@ -10,8 +10,8 @@ export type Session = {
     }
 }
 
-export async function login(email: string, senha: string) {
-    const response = await api.post<Session>('/login', { email, senha })
+export async function login(email: string, password: string) {
+    const response = await api.post<Session>('/login', { email, password })
     return response.data
 
 }

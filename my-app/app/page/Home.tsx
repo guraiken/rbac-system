@@ -13,7 +13,7 @@ type Material = {
     category: string;
 }
 
-const Home = ({session, onLogout,}: Props) => {
+export const Home = ({ session, onLogout, }: Props) => {
 
     const [materials, setMaterials] = useState<Material[]>([])
     const [loading, setLoading] = useState(true)
@@ -30,16 +30,17 @@ const Home = ({session, onLogout,}: Props) => {
 
         async function fetchMaterials() {
             try {
-                const response = await api.get<Material[]>("/materials", 
-                    { headers: { Authorization: `Bearer ${session.token}` } 
-                })
+                const response = await api.get<Material[]>("/materials",
+                    {
+                        headers: { Authorization: `Bearer ${session.token}` }
+                    })
                 if (active) {
                     setMaterials(response.data)
                 }
             } catch (error) {
-                if(active) setError(errorMessage(error))
+                if (active) setError(errorMessage(error))
             } finally {
-                if(active) setLoading(false)
+                if (active) setLoading(false)
             }
         }
 
@@ -56,7 +57,7 @@ const Home = ({session, onLogout,}: Props) => {
     }
 
     async function remove(material: Material) {
-        if(!window.confirm("Deseja realmente remover o material " + material.name + "?")) {
+        if (!window.confirm("Deseja realmente remover o material " + material.name + "?")) {
             return;
         }
         setDeleting(material.id)
@@ -80,7 +81,44 @@ const Home = ({session, onLogout,}: Props) => {
 
     return (
         <>
-            HOME Inicial
+            <div>
+                <p>Bem-vindo, {session.user.name || session.user.email}!</p>
+                <button onClick={onLogout}>Sair</button>
+                <h1>Materiais</h1>
+                {!loading && materials.length === 0 && <p>Nenhum material encontrado.</p>}
+                <p>{isAdmin ? "Você pode consultar e excluir materiais." : "Você pode consultar materiais."}</p>
+                <p>Para comparar os perfis você pode sair e entrar com outra conta</p>
+                <button disabled={loading || deleting !== null} onClick={refresh}>
+                    Atualizar Materiais
+                </button>
+                {error && <p role="alert" className="text-red-500">{error}</p>}
+                {notice && <p role="status" className="text-green-500">{notice}</p>}
+                {loading ? (<p role="status">Carregando...</p>
+
+
+                ) : (
+                    <ul>
+                        {materials.map(material => (
+                            <li key={material.id}>
+                                <span>{material.name}</span>
+                                <span> - {material.category}</span>
+                                {isAdmin ? (
+                                    <button
+                                        disabled={deleting !== null}
+                                        onClick={() => remove(material)}
+                                    >
+                                        {deleting === material.id ? "Excluindo..." : "Excluir"}
+                                    </button>
+                                ) : (
+                                    <span> - Acesso restrito somente leitura</span>
+                                )
+                                }
+                            </li>
+                        ))}
+                    </ul>
+                )}
+                {!loading && materials.length > 0 && <p>Total de materiais: {materials.length}</p>}
+            </div>
         </>
     )
 }

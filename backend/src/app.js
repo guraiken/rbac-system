@@ -11,7 +11,7 @@ const app = e()
 app.use(cors())
 app.use(e.json())
 
-app.use("/api", authRouter);
-app.use("/api", materialsRouter)
+app.use(authRouter);
+app.use(materialsRouter)
 
 export default app
