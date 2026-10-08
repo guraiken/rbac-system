@@ -42,11 +42,16 @@ export async function getMaterial(req, res) {
 }
 
 export async function createComment(req, res) {
-  const materialId = Number(req.params.id);
+  const materialId = Number(req.params.materialId);
   const { comment } = req.body;
 
+  console.log("PARAMS:", req.params);
+  console.log("materialId:", materialId);
+
   if (!Number.isSafeInteger(materialId) || materialId <= 0) {
-    return res.status(400).json({ message: "ID do material invalido." });
+    return res.status(400).json({
+      message: "ID do material invalido."
+    });
   }
 
   if (typeof comment !== "string") {
@@ -55,7 +60,9 @@ export async function createComment(req, res) {
     });
   }
 
-  if (comment.length < 1 || comment.length > 500) {
+  const trimmedComment = comment.trim();
+
+  if (trimmedComment.length < 1 || trimmedComment.length > 500) {
     return res.status(400).json({
       message: "O comentario deve possuir entre 1 e 500 caracteres."
     });
@@ -74,12 +81,12 @@ export async function createComment(req, res) {
 
   const [result] = await req.app.locals.db.execute(
     "INSERT INTO comments (material_id, comment) VALUES (?, ?)",
-    [materialId, comment]
+    [materialId, trimmedComment]
   );
 
   res.status(201).json({
     id: result.insertId,
     material_id: materialId,
-    comment
+    comment: trimmedComment
   });
 }

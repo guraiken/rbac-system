@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { api, errorMessage } from "../../services/api";
+import { getSession } from "../../services/login";
 import type { Session } from "../../services/login";
 
 type Material = {
@@ -17,11 +18,8 @@ type Comment = {
   comment: string;
 };
 
-type Props = {
-  session: Session;
-};
 
-export default function MaterialPage({ session }: Props) {
+export default function MaterialPage() {
   const params = useParams();
   const materialId = params.id;
 
@@ -34,18 +32,31 @@ export default function MaterialPage({ session }: Props) {
   useEffect(() => {
     async function load() {
       try {
+        const session: Session | null = getSession();
+
+        if (!session) {
+          setError("Usuário não autenticado.");
+          return;
+        }
+
         const headers = {
           Authorization: `Bearer ${session.token}`,
         };
 
-        const [materialResponse, commentsResponse] = await Promise.all([
-          api.get<Material>(`/materials/${materialId}`, { headers }),
-          api.get<Comment[]>(`/comments/${materialId}`, { headers }),
-        ]);
+        const materialResponse = await api.get<Material>(
+          `/materials/${materialId}`,
+          { headers }
+        );
+
+        const commentsResponse = await api.get<Comment[]>(
+          `/comments/${materialId}`,
+          { headers }
+        );
 
         setMaterial(materialResponse.data);
         setComments(commentsResponse.data);
       } catch (error) {
+        console.error(error);
         setError(errorMessage(error));
       } finally {
         setLoading(false);
@@ -53,7 +64,41 @@ export default function MaterialPage({ session }: Props) {
     }
 
     load();
-  }, [materialId, session.token]);
+  }, [materialId]);
+
+  async function handleComment() {
+  if (!comment.trim()) {
+    return;
+  }
+
+  try {
+    const session = getSession();
+
+    if (!session) {
+      setError("Usuário não autenticado.");
+      return;
+    }
+
+    const headers = {
+      Authorization: `Bearer ${session.token}`,
+    };
+
+    const response = await api.post<Comment>(
+      `/comments/${materialId}`,
+      {
+        comment: comment.trim(),
+      },
+      { headers }
+    );
+
+    setComments((current) => [...current, response.data]);
+    setComment("");
+    setError("");
+  } catch (error) {
+    console.error(error);
+    setError(errorMessage(error));
+  }
+}
 
   if (loading) {
     return <p>Carregando material...</p>;
@@ -106,7 +151,8 @@ export default function MaterialPage({ session }: Props) {
 
       <button
         className="secondary"
-        disabled={comment.length < 1}
+        disabled={comment.trim().length < 1}
+        onClick={handleComment}
       >
         Comentar
       </button>
