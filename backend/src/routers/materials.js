@@ -1,13 +1,16 @@
 import { Router } from "express";
-import { list, deleter } from "../controllers/materials.js";
-import { authenticate, requireRole } from "../middlewares/auth.js";
+import { listMaterials, deleteMaterial } from "../controllers/materials.js";
+import { authenticate, requireRole } from "../middleware/auth.js";
+import { getMaterial } from "../controllers/comment.js";
 
-export const materialsRouter = Router()
+const router = Router();
+// AUTENTICA??O: todas as rotas abaixo exigem um token v?lido.
+router.use(authenticate);
+// Admin e usu?rio podem consultar.
+router.get("/", listMaterials);
 
-materialsRouter.use(authenticate)
+router.get("/:id", getMaterial);
 
-materialsRouter.get("/materials", list)
-
-//autoriza o delete apenas para quem é admin
-materialsRouter.get("materials/:id", requireRole("ADMIN"), deleter)
-
+// AUTORIZA??O (RBAC): apenas o perfil admin pode excluir.
+router.delete("/:id", requireRole("admin"), deleteMaterial);
+export default router;
