@@ -7,7 +7,7 @@
 3. No banco indicado em `DB_NAME`, execute `sql/users.sql`. O arquivo cria a tabela de usuários sem cadastrar contas prontas. Se ela já existir, confira os campos e o índice UNIQUE de e-mail; o script não modifica tabelas existentes.
 4. Execute `npm start`. A API usa a porta 8081 por padrão.
 
-A listagem de materiais continua usando a tabela `materials` preparada na aula. O comando antigo `npm run seed` depende de um arquivo ausente neste projeto; use o SQL acima para preparar o cadastro.
+Para os materiais, execute `sql/materials.sql` antes de `sql/comments.sql` (os comentários referenciam `materials`). O script cria a tabela com `id`, `name` e `category` e insere alguns materiais de exemplo só se ela estiver vazia. O comando antigo `npm run seed` depende de um arquivo ausente neste projeto; use os scripts SQL acima.
 
 ## Cadastro explicado
 
